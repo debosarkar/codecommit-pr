@@ -1,0 +1,31 @@
+{
+  "version": "0",
+  "id": "01234567-89ab-cdef-0123-456789abcdef",
+  "detail-type": "CodeCommit Pull Request State Change",
+  "source": "aws.codecommit",
+  "account": "123456789012",
+  "time": "2026-10-12T10:00:00Z",
+  "region": "us-east-1",
+  "resources": [
+    "arn:aws:codecommit:us-east-1:123456789012:demo"
+  ],
+  "detail": {
+    "author": "arn:aws:iam::123456789012:user/dev",
+    "callerUserArn": "arn:aws:iam::123456789012:user/dev",
+    "creationDate": "Mon Oct 12 10:00:00 UTC 2026",
+    "destinationCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "destinationReference": "refs/heads/main",
+    "event": "pullRequestSourceBranchUpdated",
+    "isMerged": "False",
+    "lastModifiedDate": "Mon Oct 12 10:00:00 UTC 2026",
+    "pullRequestId": "7",
+    "pullRequestStatus": "Open",
+    "repositoryNames": [
+      "demo"
+    ],
+    "revisionId": "r2",
+    "sourceCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sourceReference": "refs/heads/feature",
+    "title": "Add orders"
+  }
+}

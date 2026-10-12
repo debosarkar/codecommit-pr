@@ -1,0 +1,18 @@
+[
+  {"id": "py-secret", "file": "orders.py", "lines": [5, 5], "ref": "GEN-001"},
+  {"id": "py-sqli", "file": "orders.py", "lines": [9, 9], "ref": "GEN-002"},
+  {"id": "py-mutable-default", "file": "orders.py", "lines": [13, 13], "ref": "PY-001"},
+  {"id": "py-file-leak", "file": "orders.py", "lines": [19, 21], "ref": "GEN-004"},
+  {"id": "py-no-timeout", "file": "orders.py", "lines": [26, 26], "ref": "PY-005"},
+  {"id": "py-bare-except", "file": "orders.py", "lines": [27, 28], "ref": "PY-002"},
+  {"id": "ts-secret", "file": "userService.ts", "lines": [3, 3], "ref": "GEN-001"},
+  {"id": "ts-any", "file": "userService.ts", "lines": [5, 5], "ref": "TS-002"},
+  {"id": "ts-xss", "file": "userService.ts", "lines": [10, 10], "ref": "TS-004"},
+  {"id": "ts-null-user", "file": "userService.ts", "lines": [15, 19], "ref": "TS-005"},
+  {"id": "ts-loose-eq", "file": "userService.ts", "lines": [15, 15], "ref": "TS-003"},
+  {"id": "ts-floating-promise", "file": "userService.ts", "lines": [19, 19], "ref": "TS-001"},
+  {"id": "java-leak", "file": "InvoiceRepository.java", "lines": [15, 17], "ref": "JVM-001"},
+  {"id": "java-sqli", "file": "InvoiceRepository.java", "lines": [17, 17], "ref": "JVM-004"},
+  {"id": "java-null-return", "file": "InvoiceRepository.java", "lines": [21, 21], "ref": "JVM-003"},
+  {"id": "java-swallow", "file": "InvoiceRepository.java", "lines": [22, 23], "ref": "JVM-002"}
+]

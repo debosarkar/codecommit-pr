@@ -1,0 +1,3 @@
+anthropic[bedrock]
+boto3
+pytest

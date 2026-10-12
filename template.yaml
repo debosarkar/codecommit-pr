@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Reviews CodeCommit pull requests with Claude in Amazon Bedrock and posts comments.
+
+Parameters:
+  StandardsUrl:
+    Type: String
+    Description: Raw URL of standards/code-review.md in the public nda-skills GitHub repo.
+    AllowedPattern: "https://.+"
+  ModelId:
+    Type: String
+    Default: anthropic.claude-opus-5-5
+  Effort:
+    Type: String
+    Default: high
+    AllowedValues: [low, medium, high, xhigh, max]
+  RepositoryNames:
+    Type: String
+    Default: ""
+    Description: Comma-separated repositories to review. Empty = all repositories in this account/region.
+  MaxFiles:
+    Type: Number
+    Default: 30
+  MaxInlineComments:
+    Type: Number
+    Default: 15
+  MaxFileBytes:
+    Type: Number
+    Default: 100000
+  InlineSeverities:
+    Type: String
+    Default: critical,high,medium
+
+Resources:
+  ReviewerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: pr_reviewer.handler.lambda_handler
+      Runtime: python3.12
+      Architectures: [arm64]
+      Timeout: 300
+      MemorySize: 1024
+      Environment:
+        Variables:
+          MODEL_ID: !Ref ModelId
+          EFFORT: !Ref Effort
+          STANDARDS_URL: !Ref StandardsUrl
+          REPOSITORY_NAMES: !Ref RepositoryNames
+          MAX_FILES: !Ref MaxFiles
+          MAX_INLINE_COMMENTS: !Ref MaxInlineComments
+          MAX_FILE_BYTES: !Ref MaxFileBytes
+          INLINE_SEVERITIES: !Ref InlineSeverities
+      EventInvokeConfig:
+        MaximumRetryAttempts: 2
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - codecommit:GetPullRequest
+                - codecommit:GetDifferences
+                - codecommit:GetBlob
+                - codecommit:GetCommentsForPullRequest
+                - codecommit:PostCommentForPullRequest
+              Resource: !Sub arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:*
+            - Effect: Allow
+              Action: bedrock-mantle:CreateInference
+              Resource: "*"  # TODO(follow-up ticket 01): scope to the model ARN once the Mantle ARN format is confirmed
+      Events:
+        PullRequestChanged:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source: [aws.codecommit]
+              detail-type: [CodeCommit Pull Request State Change]
+              detail:
+                event: [pullRequestCreated, pullRequestSourceBranchUpdated]
+
+  ReviewerErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: PR reviewer Lambda errors
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ReviewerFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+Outputs:
+  FunctionName:
+    Value: !Ref ReviewerFunction
